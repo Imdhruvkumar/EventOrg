@@ -1,7 +1,8 @@
 const User = require('../models/User');
-const sendOTPEmail = require('../utils/email');
+const {sendOTPEmail} = require('../utils/email.js');
 const Otp = require('../models/Otp');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs')
 const generateToken =  (id,role) => {
     return jwt.sign({id ,role},process.env.JWT_SECRET,{expiresIn:'7d'});
 }
@@ -15,10 +16,10 @@ const registerUser = async (req,res)=>{
     const salt = await bcrypt.genSalt(10);
     const hashPassword= await bcrypt.hash(password,salt)
     try {
-        const user = new User.create({name,email,password:hashPassword,role:'user',isVerified:false });
+        const user = await User.create({name,email,password:hashPassword,role:'user',isVerified:false });
 
 
-        const otp = Math.floor(100000 + Math.random * 900000).toString();
+        const otp = Math.floor(100000 + Math.random()* 900000).toString();
         console.log(`OTP for ${email}:${otp}`);
         await Otp.create({email,otp,action:'account_verification'});
 
@@ -29,7 +30,7 @@ const registerUser = async (req,res)=>{
         });
         
     } catch (error) {
-        req.status(400).json({message:error.message});
+        res.status(400).json({message:error.message});
     }
 };
 
@@ -45,7 +46,7 @@ const loginUser = async (req,res) =>{
     }
 
     if (!user.isVerified && user.role === 'user') {
-       const otp = Math.floor(100000 + Math.random * 900000).toString();
+       const otp = Math.floor(100000 + Math.random()* 900000).toString();
        await Otp.deleteMany({email,action:'account_verification'});
        await Otp.create({email,otp,action:'account_verification'});
         await sendOTPEmail(email,otp,'account_verification'); 
