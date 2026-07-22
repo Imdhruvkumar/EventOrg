@@ -5,7 +5,7 @@ const { sendBookingEmail, sendOTPEmail } = require('../utils/email');
 
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-exports.sendBookingOTP = async (req, res) => {
+exports.sendBookingOtp = async (req, res) => {
     try {
         const otp = generateOTP();
         await OTP.findOneAndDelete({ email: req.user.email, action: 'event_booking' });
