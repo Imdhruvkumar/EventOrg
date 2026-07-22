@@ -48,7 +48,7 @@ exports.createEvent = async(req,res)=>{
             category,
             totalSeats,
             ticketPrice,
-            imageUrl
+            image
         });
         res.status(200).json(event);
     } catch (error) {
@@ -68,7 +68,7 @@ exports.updateEvent = async(req,res)=>{
             category,
             totalSeats,
             ticketPrice,
-            imageUrl
+            image
         },{new:true});
 
         if (!event) {

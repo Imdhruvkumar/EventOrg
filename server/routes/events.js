@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.router();
+const router = express.Router();
 const {protect,admin}= require('../middlewere/auth');
 const {getAllEvents,getEventById,createEvent,updateEvent,deleteEvent}= require('../controllers/eventController');
 
