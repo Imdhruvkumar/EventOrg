@@ -7,6 +7,8 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 
 exports.sendBookingOtp = async (req, res) => {
     try {
+        console.log("User:", req.user);
+        console.log("Email:", req.user?.email);
         const otp = generateOTP();
         await OTP.findOneAndDelete({ email: req.user.email, action: 'event_booking' });
         await OTP.create({ email: req.user.email, otp, action: 'event_booking' });
