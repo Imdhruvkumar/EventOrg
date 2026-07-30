@@ -26,21 +26,20 @@ const eventSchema = new mongoose.Schema({
         required:true
     },
     availableSeats:{
-          type:Number,
-        required:true
+          type:Number
     },
     ticketPrice:{
         type:Number,
         required:true
     },
     image:{
-        type:String,
-        required:true
+        type:String
+        
     },
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
-        required:true
+        ref:'User'
+      
     }
 },{timestamps:true});
 

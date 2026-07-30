@@ -37,7 +37,7 @@ exports.getEventById = async(req,res)=>{
 };
 
 exports.createEvent = async(req,res)=>{
-    const {title,description,date,location,category,totalSeats,ticketPrice,imageUrl} = req.body;
+    const {title,description,date,location,category,totalSeats,ticketPrice,image} = req.body;
 
     try {
         const event = await Event.create({
@@ -47,8 +47,10 @@ exports.createEvent = async(req,res)=>{
             location,
             category,
             totalSeats,
+            //availableSeats: totalSeats,
             ticketPrice,
-            image
+            image,
+            //createdBy: req.user.id
         });
         res.status(200).json(event);
     } catch (error) {
@@ -57,7 +59,7 @@ exports.createEvent = async(req,res)=>{
 };
 
 exports.updateEvent = async(req,res)=>{
-    const {title,description,date,location,category,totalSeats,ticketPrice,imageUrl} = req.body;
+    const {title,description,date,location,category,totalSeats,ticketPrice,image} = req.body;
 
     try {
         const event = await Event.findByIdAndUpdate(req.params.id,{
@@ -67,8 +69,10 @@ exports.updateEvent = async(req,res)=>{
             location,
             category,
             totalSeats,
+            //availableSeats: totalSeats,
             ticketPrice,
-            image
+            image,
+            //createdBy: req.user.id
         },{new:true});
 
         if (!event) {
