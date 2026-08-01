@@ -18,6 +18,10 @@ app.use('/api/auth',authRoutes);
 app.use('/api/events',eventRoutes);
 app.use('/api/bookings',bookingRoutes);
 
+app.get("/", (req, res) => {
+  res.send("EventOrg Backend is Running 🚀");
+});
+
 connectDB();
 const PORT = process.env.PORT || 5000;
 
