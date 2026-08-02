@@ -3,27 +3,40 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+console.log("========== EMAIL CONFIG ==========");
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS EXISTS:", !!process.env.EMAIL_PASS);
+console.log("==================================");
+
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false,
+    family: 4,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+        rejectUnauthorized: false,
     },
 });
 
 transporter.verify((error, success) => {
     if (error) {
-        console.error("SMTP Connection Error:", error);
+        console.error("❌ SMTP VERIFY ERROR");
+        console.error(error);
     } else {
-        console.log("SMTP Server is Ready");
+        console.log("✅ SMTP SERVER READY");
     }
 });
 
 const sendBookingEmail = async (userEmail, userName, eventTitle) => {
     try {
-        await transporter.sendMail({
+        console.log("========== BOOKING EMAIL ==========");
+        console.log("To:", userEmail);
+
+        const info = await transporter.sendMail({
             from: `"Eventora" <${process.env.EMAIL_USER}>`,
             to: userEmail,
             subject: `Booking Confirmed: ${eventTitle}`,
@@ -34,15 +47,27 @@ const sendBookingEmail = async (userEmail, userName, eventTitle) => {
             `,
         });
 
-        console.log("Booking email sent to:", userEmail);
+        console.log("✅ BOOKING EMAIL SENT");
+        console.log("Message ID:", info.messageId);
+        console.log("Accepted:", info.accepted);
+        console.log("Rejected:", info.rejected);
+        console.log("Response:", info.response);
+
     } catch (error) {
-        console.error("Booking Email Error:", error);
+        console.error("❌ BOOKING EMAIL ERROR");
+        console.error(error);
         throw error;
     }
 };
 
 const sendOTPEmail = async (userEmail, otp, type) => {
     try {
+
+        console.log("========== OTP EMAIL ==========");
+        console.log("To:", userEmail);
+        console.log("OTP:", otp);
+        console.log("Type:", type);
+
         const title =
             type === "account_verification"
                 ? "Verify your Eventora Account"
@@ -53,7 +78,7 @@ const sendOTPEmail = async (userEmail, otp, type) => {
                 ? "Please use the following OTP to verify your account."
                 : "Please use the following OTP to verify your booking.";
 
-        await transporter.sendMail({
+        const info = await transporter.sendMail({
             from: `"Eventora" <${process.env.EMAIL_USER}>`,
             to: userEmail,
             subject: title,
@@ -79,9 +104,21 @@ const sendOTPEmail = async (userEmail, otp, type) => {
             `,
         });
 
-        console.log(`OTP sent successfully to ${userEmail}`);
+        console.log("✅ OTP EMAIL SENT SUCCESSFULLY");
+        console.log("Message ID:", info.messageId);
+        console.log("Accepted:", info.accepted);
+        console.log("Rejected:", info.rejected);
+        console.log("Response:", info.response);
+
     } catch (error) {
-        console.error("OTP Email Error:", error);
+
+        console.error("❌ OTP EMAIL ERROR");
+        console.error("Name:", error.name);
+        console.error("Message:", error.message);
+        console.error("Code:", error.code);
+        console.error("Command:", error.command);
+        console.error("Stack:", error.stack);
+
         throw error;
     }
 };
