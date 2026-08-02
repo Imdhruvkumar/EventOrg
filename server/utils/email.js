@@ -9,29 +9,30 @@ console.log("EMAIL_PASS EXISTS:", !!process.env.EMAIL_PASS);
 console.log("==================================");
 
 const transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",//brevo smtp server
+    host: "smtp-relay.brevo.com",
     port: 587,
     secure: false,
+
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
+
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
+
     tls: {
         rejectUnauthorized: false,
     },
 });
 
-transporter.verify((error, success) => {
-    if (error) {
-        console.error("❌ SMTP VERIFY ERROR");
-        console.error(error);
-    } else {
-        console.log("✅ SMTP SERVER READY");
-    }
-});
+// transporter.verify() ko comment kar diya hai
+// SMTP verify startup par zaruri nahi hota
 
 const sendBookingEmail = async (userEmail, userName, eventTitle) => {
     try {
+
         console.log("========== BOOKING EMAIL ==========");
         console.log("To:", userEmail);
 
@@ -46,20 +47,22 @@ const sendBookingEmail = async (userEmail, userName, eventTitle) => {
             `,
         });
 
-        console.log("✅ BOOKING EMAIL SENT");
-        console.log("Message ID:", info.messageId);
-        console.log("Accepted:", info.accepted);
-        console.log("Rejected:", info.rejected);
-        console.log("Response:", info.response);
+        console.log("✅ Booking Email Sent");
+        console.log(info);
+
+        return info;
 
     } catch (error) {
-        console.error("❌ BOOKING EMAIL ERROR");
+
+        console.error("❌ Booking Email Error");
         console.error(error);
+
         throw error;
     }
 };
 
 const sendOTPEmail = async (userEmail, otp, type) => {
+
     try {
 
         console.log("========== OTP EMAIL ==========");
@@ -103,20 +106,25 @@ const sendOTPEmail = async (userEmail, otp, type) => {
             `,
         });
 
-        console.log("✅ OTP EMAIL SENT SUCCESSFULLY");
-        console.log("Message ID:", info.messageId);
-        console.log("Accepted:", info.accepted);
-        console.log("Rejected:", info.rejected);
-        console.log("Response:", info.response);
+        console.log("========== EMAIL SENT ==========");
+        console.log("Message ID :", info.messageId);
+        console.log("Accepted  :", info.accepted);
+        console.log("Rejected  :", info.rejected);
+        console.log("Response  :", info.response);
+        console.log("===============================");
+
+        return info;
 
     } catch (error) {
 
-        console.error("❌ OTP EMAIL ERROR");
-        console.error("Name:", error.name);
-        console.error("Message:", error.message);
-        console.error("Code:", error.code);
-        console.error("Command:", error.command);
-        console.error("Stack:", error.stack);
+        console.error("========== SMTP ERROR ==========");
+        console.error("Name     :", error.name);
+        console.error("Code     :", error.code);
+        console.error("Message  :", error.message);
+        console.error("Command  :", error.command);
+        console.error("Response :", error.response);
+        console.error("Stack    :", error.stack);
+        console.error("===============================");
 
         throw error;
     }
@@ -126,4 +134,3 @@ module.exports = {
     sendBookingEmail,
     sendOTPEmail,
 };
-
